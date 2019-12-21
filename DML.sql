@@ -7,9 +7,9 @@ Query-overzicht:
 1. Wat zijn de parkeerkosten voor Reserveringsnummer 2
 2. Draai factuur uit voor factuurnummer 2 inclusief berekening parkeerkosten
 3. Draai alle facturen uit met naam en adres
-4. Hoe vaak is elke parkeervoorziening gebruikt en welke is het meest populair?
-5. Welke klant heeft het vaakst geparkeerd en voor hoeveel geld in totaal? 
-6. Welk bedrijf heeft de meeste medewerkers die parkeren met PPP?
+4. Welke parkeeromgeving is het meeste gebruikt
+5. Welke klant heeft het vaakst geparkeerd en voor hoeveel geld in totaal
+6. Welk bedrijf heeft de meeste medewerkers die parkeren met PPP
 ***********************************************************
 */
 
@@ -57,7 +57,16 @@ LEFT JOIN ADRES A ON F.KlantAdres = A.AdresId
 LEFT JOIN KLANT K ON F.KlantId = K.KlantId;
 
 
-/* 4. Hoe vaak is elke parkeervoorziening gebruikt en welke is het meest populair? */
+/* 4. Welke parkeeromgeving is het meeste gebruikt */
+SELECT 
+    PO.ParkeerOmgevingId AS ID,
+	PO.Straat,
+    PO.HuisNr,
+    COUNT(PS.ParkeerOmgeving) AS AantalKeer
+FROM PARKEEROMGEVING PO
+LEFT JOIN PARKEERSESSIE PS ON PO.ParkeerOmgevingId = PS.ParkeerOmgeving
+GROUP BY ParkeerOmgeving
+ORDER BY AantalKeer DESC;
 
 /* 5. Welke klant heeft het vaakst geparkeerd en voor hoeveel geld in totaal? */
 
