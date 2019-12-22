@@ -1,7 +1,10 @@
 /*
 ***********************************************************
 Name: PinPointParking
-Content: Data Definition Language (DDL) and dummy data
+Content: Data Definition Language (DDL), dummy data, stored procedures
+
+Version 3.0
++ Added stored procedures
 Version 2.0
 + added comments
 + merged DDL and database data
@@ -112,7 +115,7 @@ CREATE TABLE PARKEEROMGEVING (
 INSERT INTO PARKEEROMGEVING
 VALUES
     (DEFAULT, '5200LM', 'Leeghmanstraat', NULL, 'Den Bosch', '2.99', 10, '08:00:00', '18:00:00'),
-    (DEFAULT, '4815DK', 'Tuinlaan', 56, 'Breda', '3.10', 24, '00:00:00', '00:00:00'),
+    (DEFAULT, '4815DK', 'Tuinlaan', 56, 'Breda', '3.10', 24, '00:00:00', '23:59:59'),
     (DEFAULT, '9711KZ', 'Rademarkt', 7, 'Groningen', '2.49', 12, '08:00:00', '20:00:00');
 
 /* Create table PARKEERSESSIE */
@@ -209,3 +212,23 @@ VALUES
     (4, '7-GHT-34', 4, 2),
     (5, 'XD-43-LK', 5, 2),
     (6, '7-GHT-34', 6, 1);
+
+/* Stored Procedures */
+DELIMITER //
+
+CREATE PROCEDURE GetAllParkeersessies()
+BEGIN
+    SELECT *
+    FROM PARKEERSESSIE;
+END //
+
+CREATE PROCEDURE GetParkeersessieFromParkeeromgeving(
+    IN ParkeerOmgevingId INT(10)
+)
+BEGIN
+    SELECT * 
+    FROM PARKEERSESSIE
+    WHERE ParkeerOmgeving = ParkeerOmgevingId;
+END //
+ 
+DELIMITER ;
