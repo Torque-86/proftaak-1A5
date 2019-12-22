@@ -22,7 +22,8 @@ A. GetAllCustomers()
 ***/
 
 /* 1. Wat zijn de parkeerkosten voor Reserveringsnummer 2 */
-SELECT TariefUur / 3600 * (SELECT TIMEDIFF(EindTijd, BeginTijd) 
+SELECT TariefUur / 3600 * (SELECT TIME_TO_SEC(TIMEDIFF      
+                           (EindTijd, BeginTijd)) 
                            FROM PARKEERSESSIE 
                            WHERE ReserveringsNr = 2) 
                            AS ParkeerKosten
