@@ -17,51 +17,50 @@ CREATE DATABASE pinpointparking CHARACTER SET UTF8;
 USE pinpointparking;
 
 /* Create table ZAKELIJK */
-CREATE TABLE ZAKELIJK (
-    BedrijfsId INT(10) PRIMARY KEY AUTO_INCREMENT,
+CREATE TABLE Zakelijk (
+    KvkNummer INT(8) PRIMARY KEY,
     BedrijfsNaam VARCHAR(60),
-    BtwNummer VARCHAR(14),
-    KvkNummer INT(8)
+    BtwNummer CHAR(14)
 );
 
 /* Insert dummy data table ZAKELIJK */
 
-INSERT INTO ZAKELIJK
+INSERT INTO Zakelijk
 VALUES 
-    (DEFAULT, 'Schadebo', 'NL001234567B01', 12345678),
-    (DEFAULT, 'FC Kip', 'NL003456789B02', 87654321);
+    (12345678, 'Schadebo', 'NL001234567B01'),
+    (87654321, 'FC Kip', 'NL003456789B02');
 
 /* Create table KLANT */
-CREATE TABLE KLANT (
+CREATE TABLE Klant (
     KlantId INT(10) PRIMARY KEY AUTO_INCREMENT,
     Registratiedatum TIMESTAMP,
     Mailadres VARCHAR(60) NOT NULL UNIQUE,
-    Wachtwoord VARCHAR(60) NOT NULL,
+    Wachtwoord VARCHAR(128) NOT NULL,
     Voornaam VARCHAR(20) NOT NULL,
     Tussenvoegsel VARCHAR(10),
     Achternaam VARCHAR(60) NOT NULL,
     Mobiel CHAR(10) NOT NULL UNIQUE,
-    BedrijfsId INT(10),
+    KvkNummer INT(8),
 
     CONSTRAINT zakelijkeKlantFK
-    FOREIGN KEY (BedrijfsId)
-    REFERENCES ZAKELIJK (BedrijfsId)
+    FOREIGN KEY (KvkNummer)
+    REFERENCES Zakelijk (KvkNummer)
     ON DELETE RESTRICT
 );
 
 /* Insert dummy data table KLANT */
-INSERT INTO KLANT
+INSERT INTO Klant
 VALUES
-    (DEFAULT, DEFAULT, 'info@schadebo.nl', 'Wachtwoord1234', 'Henk', NULL, 'Vogel', '0612345678', '1'),
+    (DEFAULT, DEFAULT, 'info@schadebo.nl', 'Wachtwoord1234', 'Henk', NULL, 'Vogel', '0612345678', 12345678),
     (DEFAULT, DEFAULT, 'karin@ziggo.nl', 'Wachtwoord5678', 'Karin', 'van de', 'Oosterdijk', '0687654321', NULL),
-    (DEFAULT, DEFAULT, 'info@fckip.nl', 'Wachtwoord9012', 'Corrie', 'van de', 'Leg', '0698761234', 2);
+    (DEFAULT, DEFAULT, 'info@fckip.nl', 'Wachtwoord9012', 'Corrie', 'van de', 'Leg', '0698761234', 87654321);
 
 /* CREATE table ADRES */
-CREATE TABLE ADRES (
+CREATE TABLE Adres (
     AdresId INT(10) PRIMARY KEY AUTO_INCREMENT,
     Straat VARCHAR(60) NOT NULL,
-    HuisNr VARCHAR(60) NOT NULL,
-    Postcode VARCHAR(6) NOT NULL,
+    HuisNr VARCHAR(8) NOT NULL,
+    Postcode CHAR(6) NOT NULL,
     Stad VARCHAR(60) NOT NULL,
     Land VARCHAR(60) DEFAULT 'Nederland',
     TelefoonVast CHAR(10) UNIQUE,
@@ -69,42 +68,44 @@ CREATE TABLE ADRES (
 
     CONSTRAINT klantAdresFK
     FOREIGN KEY (KlantId)
-    REFERENCES KLANT (KlantId)
+    REFERENCES Klant (KlantId)
     ON DELETE RESTRICT
 );
 
 /* Insert dummy data table ADRES */
-INSERT INTO ADRES
+INSERT INTO Adres
 VALUES
-    (DEFAULT, 'Oosterstraat', 29, '5242KL', 'Den Bosch', DEFAULT, '0735212345', 1),
-    (DEFAULT, 'Kerkstraat', 99, '4842DN', 'Breda', DEFAULT, NULL, 2),
-    (DEFAULT, 'Laan van Columbus', 1, '9797PC', 'Thesigne', DEFAULT, '0501234567', 3);
+    (DEFAULT, 'Oosterstraat', '29', '5242KL', 'Den Bosch', DEFAULT, '0735212345', 1),
+    (DEFAULT, 'Kerkstraat', '99A', '4842DN', 'Breda', DEFAULT, NULL, 2),
+    (DEFAULT, 'Laan van Columbus', '1', '9797PC', 'Thesigne', DEFAULT, '0501234567', 3);
 
 /* Create table VOERTUIG */
-CREATE TABLE VOERTUIG (
-    Kenteken VARCHAR(8) PRIMARY KEY,
+CREATE TABLE Voertuig (
+    Kenteken CHAR(8) PRIMARY KEY,
     KlantId INT(10) NOT NULL,
 
     CONSTRAINT klantVoertuigFK
     FOREIGN KEY (KlantId)
-    REFERENCES KLANT (KlantId)
+    REFERENCES Klant (KlantId)
     ON DELETE RESTRICT
 );
 
 /* Insert dummy data table VOERTUIG */
-INSERT INTO VOERTUIG
+INSERT INTO Voertuig
 VALUES 
     ('XD-43-LK', 1),
     ('7-GHT-34', 2),
     ('NL-72-PK', 3);
 
 /* Create table PARKEEROMGEVING */
-CREATE TABLE PARKEEROMGEVING (
-    ParkeerOmgevingId INT(10) PRIMARY KEY AUTO_INCREMENT,
-    Postcode VARCHAR(6) NOT NULL,
+CREATE TABLE ParkeerPlaats (
+    ParkeerPlaatsId INT(10) PRIMARY KEY AUTO_INCREMENT,
     Straat VARCHAR(60) NOT NULL,
-    HuisNr INT(4),
+    HuisNr VARCHAR(8),
+    Postcode CHAR(6) NOT NULL,
     Stad VARCHAR(60) NOT NULL,
+    ParkeerTerrein BOOLEAN NOT NULL,
+    ParkeerGarage BOOLEAN NOT NULL,
     TariefUur DOUBLE(3,2) NOT NULL,
     MaxDuur SMALLINT(1),
     BeginBetaaldParkerenDag TIME,
@@ -112,33 +113,33 @@ CREATE TABLE PARKEEROMGEVING (
 );
 
 /* Insert dummy data table PARKEEROMGEVING */
-INSERT INTO PARKEEROMGEVING
+INSERT INTO ParkeerPlaats
 VALUES
-    (DEFAULT, '5200LM', 'Leeghmanstraat', NULL, 'Den Bosch', '2.99', 10, '08:00:00', '18:00:00'),
-    (DEFAULT, '4815DK', 'Tuinlaan', 56, 'Breda', '3.10', 24, '00:00:00', '23:59:59'),
-    (DEFAULT, '9711KZ', 'Rademarkt', 7, 'Groningen', '2.49', 12, '08:00:00', '20:00:00');
+    (DEFAULT, 'Leeghmanstraat', NULL, '5200LM', '''s-Hertogenbosch', FALSE, FALSE, '2.99', '10', '08:00:00', '18:00:00'),
+    (DEFAULT, 'Tuinlaan', '56', '4815DK', 'Breda', FALSE, TRUE, '3.10', 24, '00:00:00', '23:59:59'),
+    (DEFAULT, 'Rademarkt', '7', '9711KZ', 'Groningen',  FALSE, TRUE, '2.49', 12, '08:00:00', '20:00:00');
 
 /* Create table PARKEERSESSIE */
-CREATE TABLE PARKEERSESSIE (
+CREATE TABLE ParkeerSessie (
     ReserveringsNr INT(10) PRIMARY KEY AUTO_INCREMENT,
     BeginTijd DATETIME NOT NULL,
     EindTijd DATETIME NOT NULL,
-    Kenteken VARCHAR(8) NOT NULL,
-    ParkeerOmgeving INT(10) NOT NULL,
+    Kenteken CHAR(8) NOT NULL,
+    ParkeerPlaats INT(10) NOT NULL,
 
     CONSTRAINT kentekenParkeerSessieFK1
     FOREIGN KEY (Kenteken)
-    REFERENCES VOERTUIG(Kenteken)
+    REFERENCES Voertuig (Kenteken)
     ON DELETE RESTRICT,
 
-    CONSTRAINT parkeerOmgevingSessieFK2
-    FOREIGN KEY (ParkeerOmgeving)
-    REFERENCES PARKEEROMGEVING(ParkeerOmgevingId)
+    CONSTRAINT parkeerPlaatsSessieFK2
+    FOREIGN KEY (ParkeerPlaats)
+    REFERENCES ParkeerPlaats (ParkeerPlaatsId)
     ON DELETE RESTRICT
 );
 
 /* Insert dummy data table PARKEERSESSIE */
-INSERT INTO PARKEERSESSIE
+INSERT INTO ParkeerSessie
 VALUES 
     (DEFAULT, '2019-11-13 15:02:45', '2019-11-13 16:31:20', 'XD-43-LK', 1),
     (DEFAULT, '2019-11-29 08:22:05', '2019-11-29 09:23:43', '7-GHT-34', 2),
@@ -148,25 +149,25 @@ VALUES
     (DEFAULT, '2019-12-12 11:56:45', '2019-12-12 21:34:01', '7-GHT-34', 1);
 
 /* Create table FACTUUR */
-CREATE TABLE FACTUUR (
+CREATE TABLE Factuur (
     FactuurNr INT(10) PRIMARY KEY AUTO_INCREMENT,
     FactuurDatum DATE NOT NULL,
     KlantId INT(10) NOT NULL,
-    KlantAdres INT(10) NOT NULL,
+    AdresId INT(10) NOT NULL,
 
     CONSTRAINT klantIdFactuurFK1
     FOREIGN KEY (KlantId)
-    REFERENCES KLANT(KlantId)
+    REFERENCES Klant (KlantId)
     ON DELETE RESTRICT,
 
-    CONSTRAINT klantadresFactuurFK2
-    FOREIGN KEY (KlantAdres)
-    REFERENCES ADRES(AdresId)
+    CONSTRAINT klantAdresFactuurFK2
+    FOREIGN KEY (AdresId)
+    REFERENCES Adres (AdresId)
     ON DELETE RESTRICT
 );
 
 /* Insert dummy data table FACTUUR */
-INSERT INTO FACTUUR
+INSERT INTO Factuur
 VALUES 
     (DEFAULT, '2019-11-14', 1, 1),
     (DEFAULT, '2019-11-30', 2, 2),
@@ -176,35 +177,35 @@ VALUES
     (DEFAULT, '2019-12-13', 2, 2);
 
 /* Create table FACTUURREGELS */
-CREATE TABLE FACTUURREGELS (
+CREATE TABLE FactuurRegel (
     FactuurNr INT(10) NOT NULL,
-    Kenteken VARCHAR(8) NOT NULL,
+    Kenteken CHAR(8) NOT NULL,
     ParkeerSessie INT(10) NOT NULL,
-    ParkeerOmgeving INT(10) NOT NULL,
+    ParkeerPlaats INT(10) NOT NULL,
 
     CONSTRAINT factuurNrFK1
     FOREIGN KEY (FactuurNr)
-    REFERENCES FACTUUR(FactuurNr)
+    REFERENCES Factuur (FactuurNr)
     ON DELETE RESTRICT,
 
     CONSTRAINT kentekenFactuurFK2
     FOREIGN KEY (Kenteken)
-    REFERENCES VOERTUIG(Kenteken)
+    REFERENCES Voertuig (Kenteken)
     ON DELETE RESTRICT,
 
-    CONSTRAINT parkeersessieFactuurFK3
+    CONSTRAINT parkeerSessieFactuurFK3
     FOREIGN KEY (ParkeerSessie)
-    REFERENCES ParkeerSessie(ReserveringsNr)
+    REFERENCES ParkeerSessie (ReserveringsNr)
     ON DELETE RESTRICT,
 
-    CONSTRAINT parkeeromgevingFactuurFK4
-    FOREIGN KEY (ParkeerOmgeving)
-    REFERENCES ParkeerOmgeving(ParkeerOmgevingId)
+    CONSTRAINT parkeerPlaatsFactuurFK4
+    FOREIGN KEY (ParkeerPlaats)
+    REFERENCES ParkeerPlaats (ParkeerPlaatsId)
     ON DELETE RESTRICT
 );
 
 /* Insert dummy data table FACTUURREGELS */
-INSERT INTO FACTUURREGELS
+INSERT INTO FactuurRegel
 VALUES 
     (1, 'XD-43-LK', 1, 1),
     (2, '7-GHT-34', 2, 2),
@@ -219,7 +220,7 @@ DELIMITER //
 CREATE PROCEDURE GetAllParkeersessies()
 BEGIN
     SELECT *
-    FROM PARKEERSESSIE;
+    FROM ParkeerSessie;
 END //
 
 CREATE PROCEDURE GetParkeersessieFromParkeeromgeving(
@@ -227,8 +228,21 @@ CREATE PROCEDURE GetParkeersessieFromParkeeromgeving(
 )
 BEGIN
     SELECT * 
-    FROM PARKEERSESSIE
+    FROM ParkeerSessie
     WHERE ParkeerOmgeving = ParkeerOmgevingId;
 END //
+
+/* CREATE PROCEDURE excludeBetaalTijden(
+	IN BeginBetaalTijd TIME
+)
+BEGIN
+        IF BeginTijd BETWEEN 18:00:00 AND 07:59:59
+        THEN 
+
+        IF EindTijd BETWEEN 18:00:00 AND 07:59:59
+        THEN
+END //  */
+
+
  
 DELIMITER ;
