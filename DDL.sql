@@ -1,15 +1,21 @@
 /*
-***********************************************************
+****************************************************
 Name: PinPointParking
-Content: Data Definition Language (DDL), dummy data, stored procedures
+Content: Data Definition Language (DDL), dummy data, 
+stored procedures, users and roles
 
-Version 3.0
-+ Added stored procedures
-Version 2.0
+Version 1.2
++ added stored procedures
+Version 1.1
 + added comments
 + merged DDL and database data
-***********************************************************
+****************************************************
 */
+
+
+/**
+* DDL AND DUMMY DATA
+**/
 
 /* Create database pinpointparking */
 DROP DATABASE IF EXISTS pinpointparking;
@@ -214,7 +220,10 @@ VALUES
     (5, 'XD-43-LK', 5, 2),
     (6, '7-GHT-34', 6, 1);
 
-/* Stored Procedures */
+
+/**
+* STORED PROCEDURES
+**/
 DELIMITER //
 
 CREATE PROCEDURE GetAllParkeersessies()
@@ -231,18 +240,5 @@ BEGIN
     FROM ParkeerSessie
     WHERE ParkeerOmgeving = ParkeerOmgevingId;
 END //
-
-/* CREATE PROCEDURE excludeBetaalTijden(
-	IN BeginBetaalTijd TIME
-)
-BEGIN
-        IF BeginTijd BETWEEN 18:00:00 AND 07:59:59
-        THEN 
-
-        IF EindTijd BETWEEN 18:00:00 AND 07:59:59
-        THEN
-END //  */
-
-
  
 DELIMITER ;
