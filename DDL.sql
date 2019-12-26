@@ -2,7 +2,7 @@
 ****************************************************
 Name: PinPointParking
 Content: Data Definition Language (DDL), dummy data, 
-stored procedures, users and roles
+stored procedures
 
 Version 1.2
 + added stored procedures
@@ -11,7 +11,6 @@ Version 1.1
 + merged DDL and database data
 ****************************************************
 */
-
 
 /**
 * DDL AND DUMMY DATA
@@ -121,7 +120,7 @@ CREATE TABLE ParkeerPlaats (
 /* Insert dummy data table PARKEEROMGEVING */
 INSERT INTO ParkeerPlaats
 VALUES
-    (DEFAULT, 'Leeghmanstraat', NULL, '5200LM', '''s-Hertogenbosch', FALSE, FALSE, '2.99', '10', '08:00:00', '18:00:00'),
+    (DEFAULT, 'Leeghmanstraat', NULL, '5200LM', '''s-Hertogenbosch', FALSE, FALSE, '2.99', '10', '09:00:00', '17:00:00'),
     (DEFAULT, 'Tuinlaan', '56', '4815DK', 'Breda', FALSE, TRUE, '3.10', 24, '00:00:00', '23:59:59'),
     (DEFAULT, 'Rademarkt', '7', '9711KZ', 'Groningen',  FALSE, TRUE, '2.49', 12, '08:00:00', '20:00:00');
 
@@ -220,12 +219,11 @@ VALUES
     (5, 'XD-43-LK', 5, 2),
     (6, '7-GHT-34', 6, 1);
 
-
 /**
 * STORED PROCEDURES
 **/
 DELIMITER //
-
+/* Simpele test SP om alle parkeersessies op te halen */
 CREATE PROCEDURE GetAllParkeersessies()
 BEGIN
     SELECT *
@@ -241,4 +239,48 @@ BEGIN
     WHERE ParkeerOmgeving = ParkeerOmgevingId;
 END //
  
+/* Stored Procedure Parkeerplaats 1 parkeerkosten zonder de gratis tijdstippen */
+CREATE PROCEDURE KostenParkeerPlaats1(
+    IN spReserveringsNr INT,
+    OUT spParkeerkosten DOUBLE(3,2)
+)
+
+BEGIN 
+SELECT 
+    ReserveringsNr,
+	BeginTijd,
+    EindTijd,
+    TIME_TO_SEC(TIMEDIFF(EindTijd, BeginTijd)) / 3600 AS UrenTotaal,
+    TIME_TO_SEC(TIMEDIFF(EindTijd, BeginTijd)) / 3600 
+    - DATEDIFF(EindTijd, BeginTijd) * 16 AS UrenBetaald,
+    TariefUur,
+    (TIME_TO_SEC(TIMEDIFF(EindTijd, BeginTijd)) / 3600 
+    - DATEDIFF(EindTijd, BeginTijd) * 16) * TariefUur AS Kosten
+FROM ParkeerSessie PS
+LEFT JOIN ParkeerPlaats PP ON PS.ParkeerPlaats = PP.ParkeerPlaatsId
+WHERE ReserveringsNr = spReserveringsNr;
+END //
+
+/* Stored Procedure Parkeerplaats 3 parkeerkosten zonder de gratis tijdstippen */
+CREATE PROCEDURE KostenParkeerPlaats3(
+    IN spReserveringsNr INT,
+    OUT spParkeerkosten DOUBLE(3,2)
+)
+
+BEGIN 
+SELECT 
+    ReserveringsNr,
+	BeginTijd,
+    EindTijd,
+    TIME_TO_SEC(TIMEDIFF(EindTijd, BeginTijd)) / 3600 AS UrenTotaal,
+    TIME_TO_SEC(TIMEDIFF(EindTijd, BeginTijd)) / 3600 
+    - DATEDIFF(EindTijd, BeginTijd) * 12 AS UrenBetaald,
+    TariefUur,
+    (TIME_TO_SEC(TIMEDIFF(EindTijd, BeginTijd)) / 3600 
+    - DATEDIFF(EindTijd, BeginTijd) * 12) * TariefUur AS Kosten
+FROM ParkeerSessie PS
+LEFT JOIN ParkeerPlaats PP ON PS.ParkeerPlaats = PP.ParkeerPlaatsId
+WHERE ReserveringsNr = spReserveringsNr;
+END //
+
 DELIMITER ;
