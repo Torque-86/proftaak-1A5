@@ -2,7 +2,7 @@
 ***********************************************************
 Name: PinPointParking
 Content: Data Manipulation Language (DML)
-User-stories: db_admin, medewerker, bedrijf, gebruiker
+User-stories: db_admin, medewerker, bedrijf, particulier
 
 Queries medewerker:
 M1. Ik wil alle facturen ophalen met naam en adres
@@ -18,10 +18,10 @@ B1. Ik wil de parkeerkosten zien voor reserveringsnummer 2
 B2. Ik wil de factuur ophalen voor factuurnummer 2 inclusief de parkeerkosten
 ---> B3. Ik wil een overzicht met alle NAW-gegevens van alle medewerkers die PPP gebruiken
 
-Queries gebruiker:
----> G1. Ik wil al mijn parkeersessies zien
-G2. Ik wil mijn adres wijzigen
----> G3. Ik wil mijn account verwijderen
+Queries particulier:
+---> P1. Ik wil al mijn parkeersessies zien
+P2. Ik wil mijn adres wijzigen
+---> P3. Ik wil mijn account verwijderen
 
 
 Versie: 1.1
@@ -112,7 +112,7 @@ LEFT JOIN Klant K ON F.KlantId = K.KlantId
 LEFT JOIN ParkeerPlaats PP ON FR.ParkeerPlaats =  PP.ParkeerPlaatsId
 WHERE F.FactuurNr = 2;
 
-/* G2. Adres wijzigen */
+/* P2. Adres wijzigen */
 UPDATE adres
 SET 
     Straat = 'Westerstraat',
