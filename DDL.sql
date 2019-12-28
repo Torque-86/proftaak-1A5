@@ -4,12 +4,8 @@ Name: PinPointParking
 Content: Data Definition Language (DDL), dummy data, 
 stored procedures
 
-Version 1.4
-+ DDL aangepast n.a.v. overleg RM
-Version 1.3
-+ Added views
 Version 1.2
-+ Added stored procedures
++ DDL aangepast n.a.v. overleg RM
 Version 1.1
 + Added comments
 + Merged DDL and database data
@@ -51,14 +47,18 @@ VALUES
 DROP TABLE IF EXISTS Klant;
 CREATE TABLE Klant (
     KlantId INT(10) PRIMARY KEY AUTO_INCREMENT,
-    Registratiedatum TIMESTAMP,
+    Registratiedatum DATETIME,
     Mailadres VARCHAR(60) NOT NULL UNIQUE,
     Wachtwoord VARCHAR(128) NOT NULL,
     Voornaam VARCHAR(20) NOT NULL,
     Tussenvoegsel VARCHAR(10),
     Achternaam VARCHAR(60) NOT NULL,
     Mobiel VARCHAR(15) NOT NULL UNIQUE,
+    Zakelijk BOOLEAN NOT NULL,
     KvkNummer INT(8),
+    MachtigingAutoInc BOOLEAN NOT NULL,
+    MachtigingDatum DATETIME,
+    IBAN VARCHAR(10),
 
     CONSTRAINT zakelijkeKlantFK
     FOREIGN KEY (KvkNummer)
@@ -69,26 +69,26 @@ CREATE TABLE Klant (
 /* Insert dummy data table Klant */
 INSERT INTO Klant
 VALUES
-    (DEFAULT, DEFAULT, 'h.vogel@henneken.org', 'WW=1234', 'Henk', NULL, 'Vogel', '0612345678', 12345678), /* 1 */
-    (DEFAULT, DEFAULT, 't.vandepaddestoel@henneken.org', 'WW=5678', 'Truus', 'van de', 'Paddestoel', '0698765432', 12345678),
-    (DEFAULT, DEFAULT, 'h.vanhezelswerd@henneken.org', 'WW=9012', 'Halina', 'van', 'Hezelswerd', '0667589876', 12345678), /* 3 */
-    (DEFAULT, DEFAULT, 'r.karrel@henneken.org', 'WW=3456', 'Rudi', NULL, 'Karrel', '0613567854', 12345678),
-    (DEFAULT, DEFAULT, 'karin@ziggo.nl', 'Wachtwoord2134', 'Karin', 'van de', 'Oosterdijk', '0687654321', NULL), /* 5 */
-    (DEFAULT, DEFAULT, 'imanuel@lassibi.nl', 'Wachtwoord5678', 'Imanuël', NULL, 'Lassibi', '0673980090', NULL), 
-    (DEFAULT, DEFAULT, 'karin@hotmail.com', 'Wachtwoord5678', 'Karin', NULL, 'Vanmechelse', '0032477654321', NULL), /* 7 */
-    (DEFAULT, DEFAULT, 'c.vandeleg@fckip.com', 'Wachtwoord9012', 'Corrie', 'van de', 'Leg', '0607630098', 87654321),
-    (DEFAULT, DEFAULT, 't.delabout@fckip.com', 'Wachtwoord1234', 'Tiny', 'de la', 'Bout', '0656556598', 87654321), /* 9 */
-    (DEFAULT, DEFAULT, 'harry@freedom.nl', 'Wachtwoord3322', 'Harry', 'van de', 'Haverzee', '0662819273', NULL),
-    (DEFAULT, DEFAULT, 'info@mora.nl', 'WW=12345678', 'Marina', 'van', 'Mora', '0683728190', 56435654), /* 11 */
-    (DEFAULT, DEFAULT, 't.vlaarhoven@intratuin.nl', '1234haha', 'Tinus', 'van', 'Laarhoven', '0634343434', 87612342),
-    (DEFAULT, DEFAULT, 'vandebouwput@heijmans.nl', 'DezeRaadJeNiet123', 'Berend', 'van de', 'Bouwput', '0642526254', 77656543), /* 13 */
-    (DEFAULT, DEFAULT, 'vdoever@ikbentochnietgek.nl', 'WW=98672', 'River', 'van den', 'Oever', '0673618291', 98709876),
-    (DEFAULT, DEFAULT, 'hamers@gamma.nl', 'W34234W', 'Nely', NULL, 'Hamers', '0610938946', 12232122), /* 15 */
-    (DEFAULT, DEFAULT, 'dionaysa@gasteltje.nl', 'DiamondsR4ever', 'Dionaysa', NULL, 'Bling', '0678334568', 76298701),
-    (DEFAULT, DEFAULT, 'nick@ah.nl', 'W827282W', 'Nick', NULL, 'Schilder', '0682718394', 12676512), /* 17 */
-    (DEFAULT, DEFAULT, 'rachid@ah.nl', 'Wechtwurd2', 'Rachid', NULL, 'Albahezi', '004976898798910', 12676512),
-    (DEFAULT, DEFAULT, 'pryssy@outlook.com', 'Wacht1234', 'Prycilla', 'Van Den', 'Elzen', '0032477123456', NULL), /* 19 */
-    (DEFAULT, DEFAULT, 'raphy@gmail.com', 'W5678', 'Raphaël', NULL, 'Rhizzouana', '0687879809', NULL);
+    (DEFAULT, '2019-10-20', 'h.vogel@henneken.org', 'WW=1234', 'Henk', NULL, 'Vogel', '0612345678', TRUE, 12345678, TRUE, '2019-10-25', 'NL20INGB0001234567'),
+    (DEFAULT, '2019-10-20', 't.vandepaddestoel@henneken.org', 'WW=5678', 'Truus', 'van de', 'Paddestoel', '0698765432', TRUE, 12345678, TRUE, '2019-10-25', 'NL20INGB0001234567'),
+    (DEFAULT, '2019-10-20', 'h.vanhezelswerd@henneken.org', 'WW=9012', 'Halina', 'van', 'Hezelswerd', '0667589876', TRUE, 12345678, TRUE, '2019-10-25', 'NL20INGB0001234567'),
+    (DEFAULT, '2019-10-20', 'r.karrel@henneken.org', 'WW=3456', 'Rudi', NULL, 'Karrel', '0613567854', TRUE, 12345678, TRUE, '2019-10-25', 'NL20INGB0001234567'),
+    (DEFAULT, '2019-10-20', 'karin@ziggo.nl', 'Wachtwoord2134', 'Karin', 'van de', 'Oosterdijk', '0687654321', FALSE, NULL, FALSE, NULL, NULL),
+    (DEFAULT, '2019-10-20', 'imanuel@lassibi.nl', 'Wachtwoord5678', 'Imanuël', NULL, 'Lassibi', '0673980090', FALSE, NULL, FALSE, NULL, NULL),
+    (DEFAULT, '2019-10-20', 'karin@hotmail.com', 'Wachtwoord5678', 'Karin', NULL, 'Vanmechelse', '0032477654321', FALSE, NULL, FALSE, NULL, NULL),
+    (DEFAULT, '2019-10-20', 'c.vandeleg@fckip.com', 'Wachtwoord9012', 'Corrie', 'van de', 'Leg', '0607630098', TRUE, 87654321, TRUE, '2019-10-25', 'NL20TRIO9781234567'),
+    (DEFAULT, '2019-10-20', 't.delabout@fckip.com', 'Wachtwoord1234', 'Tiny', 'de la', 'Bout', '0656556598', TRUE, 87654321, TRUE, '2019-10-25', 'NL20TRIO9781234567'),
+    (DEFAULT, '2019-10-20', 'harry@freedom.nl', 'Wachtwoord3322', 'Harry', 'van de', 'Haverzee', '0662819273', FALSE, NULL, FALSE, NULL, NULL),
+    (DEFAULT, '2019-10-20', 'info@mora.nl', 'WW=12345678', 'Marina', 'van', 'Mora', '0683728190', TRUE, 56435654, TRUE, '2019-10-25', 'NL20ABNA2345679781'),
+    (DEFAULT, '2019-10-20', 't.vlaarhoven@intratuin.nl', '1234haha', 'Tinus', 'van', 'Laarhoven', '0634343434', TRUE, 87612342, TRUE, '2019-10-25', 'NL20RABO6792345781'),
+    (DEFAULT, '2019-10-20', 'vandebouwput@heijmans.nl', 'DezeRaadJeNiet123', 'Berend', 'van de', 'Bouwput', '0642526254', TRUE, 77656543, TRUE, '2019-10-25', 'NL20RABO6791234578'),
+    (DEFAULT, '2019-10-20', 'vdoever@ikbentochnietgek.nl', 'WW=98672', 'River', 'van den', 'Oever', '0673618291', TRUE, 98709876, TRUE, '2019-10-25', 'NL20INGB1231234578'),
+    (DEFAULT, '2019-10-20', 'hamers@gamma.nl', 'W34234W', 'Nely', NULL, 'Hamers', '0610938946', TRUE, 12232122, TRUE, '2019-10-25', 'NL20INGB9874512378'),
+    (DEFAULT, '2019-10-20', 'dionaysa@gasteltje.nl', 'DiamondsR4ever', 'Dionaysa', NULL, 'Bling', '0678334568', TRUE, 76298701, TRUE, '2019-10-25', 'NL20RABO9800212378'),
+    (DEFAULT, '2019-10-20', 'nick@ah.nl', 'W827282W', 'Nick', NULL, 'Schilder', '0682718394', TRUE, 12676512, TRUE, '2019-10-25', 'NL20RABO2123798008'),
+    (DEFAULT, '2019-10-20', 'rachid@ah.nl', 'Wechtwurd2', 'Rachid', NULL, 'Albahezi', '004976898798910', TRUE, 12676512, TRUE, '2019-10-25', 'NL20RABO2123798008'),
+    (DEFAULT, '2019-10-20', 'pryssy@outlook.com', 'Wacht1234', 'Prycilla', 'Van Den', 'Elzen', '0032477123456', FALSE, NULL, FALSE, NULL, NULL),
+    (DEFAULT, '2019-10-20', 'raphy@gmail.com', 'W5678', 'Raphaël', NULL, 'Rhizzouana', '0687879809', FALSE, NULL, FALSE, NULL, NULL);
 
 /* CREATE table Adres */
 DROP TABLE IF EXISTS Adres;
@@ -277,27 +277,27 @@ CREATE TABLE Factuur (
 /* Insert dummy data table Factuur */
 INSERT INTO Factuur
 VALUES 
-    (DEFAULT, '2019-11-30', 'Henk', NULL, 'Vogel', '0612345678', 'Oosterstraat', '29', '5288KL', '''s-Hertogenbosch', DEFAULT, '0735212345', 1), /* 1 */
+    (DEFAULT, '2019-11-30', 'Henk', NULL, 'Vogel', '0612345678', 'Oosterstraat', '29', '5288KL', '''s-Hertogenbosch', DEFAULT, '0735212345', 1),
     (DEFAULT, '2019-11-30', 'Truus', 'van de', 'Paddestoel', '0698765432', 'Kerkstraat', '99A', '4842DN', '''s-Hertogenbosch', DEFAULT, NULL, 2),
-    (DEFAULT, '2019-11-30', 'Halina', 'van', 'Hezelswerd', '0667589876', 'Middellaan', '89', '5270MS', 'Vlijmen', DEFAULT, NULL, 3), /* 3 */
+    (DEFAULT, '2019-11-30', 'Halina', 'van', 'Hezelswerd', '0667589876', 'Middellaan', '89', '5270MS', 'Vlijmen', DEFAULT, NULL, 3), 
     (DEFAULT, '2019-11-30', 'Karin', 'van de', 'Oosterdijk', '0687654321', 'Laan van Columbus', '1', '9711PC', 'Groningen', DEFAULT, '0501234567', 5),
-    (DEFAULT, '2019-11-30', 'Imanuël', NULL, 'Lassibi', '0673980090', 'Alpensteeg', '3', '2456MK', 'Hoek van Holland', DEFAULT, NULL, 6), /* 5 */
+    (DEFAULT, '2019-11-30', 'Imanuël', NULL, 'Lassibi', '0673980090', 'Alpensteeg', '3', '2456MK', 'Hoek van Holland', DEFAULT, NULL, 6), 
     (DEFAULT, '2019-11-30', 'Karin', NULL, 'Vanmechelse', '0032477654321', 'Dr. Frankenplein', '110', '4321', 'Antwerpen', 'België', '0032304567654', 7),
-    (DEFAULT, '2019-11-30', 'Corrie', 'van de', 'Leg', '0607630098', 'Willem de Zwijgerlaan', '13', '2323MN', 'Amsterdam', DEFAULT, NULL, 8), /* 7 */
+    (DEFAULT, '2019-11-30', 'Corrie', 'van de', 'Leg', '0607630098', 'Willem de Zwijgerlaan', '13', '2323MN', 'Amsterdam', DEFAULT, NULL, 8), 
     (DEFAULT, '2019-12-30', 'Tiny', 'de la', 'Bout', '0656556598', 'Rijkerstraat', '98', '2320ML', 'Amsterdam', DEFAULT, NULL, 9),
-    (DEFAULT, '2019-12-30', 'Harry', 'van de', 'Haverzee', '0662819273', 'Witte de Withlaan', '4', '1234WK', 'Maastricht', DEFAULT, '0345465767', 10), /* 9*/
+    (DEFAULT, '2019-12-30', 'Harry', 'van de', 'Haverzee', '0662819273', 'Witte de Withlaan', '4', '1234WK', 'Maastricht', DEFAULT, '0345465767', 10), 
     (DEFAULT, '2019-12-30', 'Marina', 'van', 'Mora', '0683728190', 'Schoolstraat', '211C', '3232HB', 'Utrecht', DEFAULT, NULL, 11),
-    (DEFAULT, '2019-12-30', 'Tinus', 'van', 'Laarhoven', '0634343434', 'Dordrechterstraat', '23', '4810TR', 'Breda', DEFAULT, '0765465768', 12), /* 11 */
+    (DEFAULT, '2019-12-30', 'Tinus', 'van', 'Laarhoven', '0634343434', 'Dordrechterstraat', '23', '4810TR', 'Breda', DEFAULT, '0765465768', 12), 
     (DEFAULT, '2019-12-30', 'Nely', NULL, 'Hamers', '0610938946', 'Van Groesbeekseweg', '55', '2376BB', 'Schiedam', DEFAULT, NULL, 15),
-    (DEFAULT, '2019-12-30', 'Truus', 'van de', 'Paddestoel', '0698765432', 'Kerkstraat', '99A', '4842DN', '''s-Hertogenbosch', DEFAULT, NULL, 2), /* 13*/
+    (DEFAULT, '2019-12-30', 'Truus', 'van de', 'Paddestoel', '0698765432', 'Kerkstraat', '99A', '4842DN', '''s-Hertogenbosch', DEFAULT, NULL, 2), 
     (DEFAULT, '2019-12-30', 'Rudi', NULL, 'Karrel', '0613567854', 'Lange van de Lindenlaan', '67C', '5201HJ', 'Berlicum', DEFAULT, '0736789789', 4),
-    (DEFAULT, '2019-12-30', 'River', 'van den', 'Oever', '0673618291', 'Levensweg', '98', '1298TR', 'Zierikzee', DEFAULT, NULL, 14), /* 15 */
+    (DEFAULT, '2019-12-30', 'River', 'van den', 'Oever', '0673618291', 'Levensweg', '98', '1298TR', 'Zierikzee', DEFAULT, NULL, 14), 
     (DEFAULT, '2019-12-30', 'Nely', NULL, 'Hamers', '0610938946', 'Van Groesbeekseweg', '55', '2376BB', 'Schiedam', DEFAULT, NULL, 15),
-    (DEFAULT, '2019-12-30', 'Dionaysa', NULL, 'Bling', '0678334568', 'Schierlaan', '11', '2300KM', 'Vlaardingen', DEFAULT, '0107656789', 16), /* 17 */
+    (DEFAULT, '2019-12-30', 'Dionaysa', NULL, 'Bling', '0678334568', 'Schierlaan', '11', '2300KM', 'Vlaardingen', DEFAULT, '0107656789', 16),
     (DEFAULT, '2019-12-30', 'Nick', NULL, 'Schilder', '0682718394', 'Hengelose Baan', '343', '8887MM', 'Oldenzaal', DEFAULT, NULL, 17),
-    (DEFAULT, '2019-12-30', 'Rachid', NULL, 'Albahezi', '004976898798910', 'Kleiner Weg', '4', '48455', 'Bad Bentheim', 'Duitsland', '004933045432145', 18), /* 19 */
+    (DEFAULT, '2019-12-30', 'Rachid', NULL, 'Albahezi', '004976898798910', 'Kleiner Weg', '4', '48455', 'Bad Bentheim', 'Duitsland', '004933045432145', 18), 
     (DEFAULT, '2019-12-30', 'Prycilla', 'Van Den', 'Elzen', '0032477654321', 'Urbanusplein', '1', '3222', 'Antwerpen', 'België', '0032304767674', 19),
-    (DEFAULT, '2019-12-30', 'Raphaël', NULL, 'Rhizzouana', '0687879809', 'Strandpad', '3A', '1098FG', 'Middelburg', DEFAULT, NULL, 20); /* 20 */
+    (DEFAULT, '2019-12-30', 'Raphaël', NULL, 'Rhizzouana', '0687879809', 'Strandpad', '3A', '1098FG', 'Middelburg', DEFAULT, NULL, 20); 
 
 /* Create table Factuurregel */
 DROP TABLE IF EXISTS FactuurRegel;
@@ -348,41 +348,3 @@ VALUES
     (18, '1-XXX-341', '2019-12-15 12:16:45', '2019-12-17 19:12:44', 'Dr. Polderplein', NULL, '3476HM', 'Utrecht', FALSE, FALSE, '3.89', 2, '08:00:00', '22:00:00'),
     (19, 'TT-33-BC', '2019-12-16 17:56:45', '2019-12-20 07:34:01', 'Lindelinie', NULL, '6700LM', 'Arnhem', FALSE, FALSE, '2.69', 24, '08:00:00', '22:00:00'),
     (20, 'XD-43-LK', '2019-12-17 16:45:32', '2019-12-21 23:31:20', 'Leeghmanstraat', '3', '5200LM', '''s-Hertogenbosch', TRUE, FALSE, '2.99', 24, '09:00:00', '17:00:00');
-
-
-/**
-* STORED PROCEDURES
-**/
-DELIMITER //
-/* Stored Procedure: simpele test om alle parkeersessies op te halen */
-CREATE PROCEDURE GetAllParkeersessies()
-BEGIN
-    SELECT *
-    FROM ParkeerSessie;
-END //
-
-CREATE PROCEDURE GetParkeersessieFromParkeeromgeving(
-    IN ParkeerOmgevingId INT(10)
-)
-BEGIN
-    SELECT * 
-    FROM ParkeerSessie
-    WHERE ParkeerOmgeving = ParkeerOmgevingId;
-END //
- 
-
-/**
-* VIEWS
-**/
-
-/* View: Beknopt overzicht van aantal sessies per klant */
-CREATE VIEW aantalparkeersessiesperklant AS
-SELECT
-	K.KlantId,
-    CONCAT_WS(' ', Voornaam, Tussenvoegsel, Achternaam) AS Naam,
-    V.Kenteken,
-    COUNT(ReserveringsNr) AS AantalSessies
-FROM Klant K
-LEFT JOIN Voertuig V ON K.KlantId = V.KlantId
-LEFT JOIN ParkeerSessie PS ON V.Kenteken = PS.Kenteken
-GROUP BY K.KlantId;
