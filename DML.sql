@@ -131,15 +131,6 @@ CREATE PROCEDURE GetAllParkeersessies()
 BEGIN
     SELECT *
     FROM ParkeerSessie;
-END //
-
-CREATE PROCEDURE GetParkeersessieFromParkeeromgeving(
-    IN ParkeerOmgevingId INT(10)
-)
-BEGIN
-    SELECT * 
-    FROM ParkeerSessie
-    WHERE ParkeerOmgeving = ParkeerOmgevingId;
 END $$
 
 DELIMITER ;
@@ -184,7 +175,7 @@ CALL parkeerKostenFactuurNr(7);
 */
 
 /**
-* 3. Stored Procedure: bereken parkeerkosten exclusief de gratis parkerentijden
+* 3. Stored Procedure: bereken parkeerkosten exclusief de gratis parkerentijden - nog niet opgelost als iemand van 23:00 tot 06:00 uur parkeert (SP zet einddatum dan terug waardoor deze eerder begint dan de begindatum. Nog oplossen)
 */
 DELIMITER $$
 CREATE PROCEDURE kostenParkeerPlaatsId1 ( 
