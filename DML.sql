@@ -5,23 +5,35 @@ Content: Data Manipulation Language (DML)
 User-stories: db_admin, medewerker, bedrijf, particulier
 
 Queries medewerker:
-M1. Ik wil alle facturen ophalen met naam en adres
-M2. Ik wil alle parkeeromgevingen opsommen van veel naar weinig gebruikt
-M3. Ik wil de klant ophalen die het meest heeft geparkeerd
----> M4. Ik wil het bedrijf zien met de meeste medewerkers die PPP gebruiken
-M5. Ik wil een beknopt overzicht van klant, kenteken en het aantal sessies per klant
+M1. Als een medewerker wil ik de exacte parkeerkosten weten van een reservering zodat ik de factuur kan berekenen
+M2. Als een medewerker wil ik alle facturen ophalen met naam en adres zodat ik zie wie facturen moet krijgen
+M2. Als een medewerker wil ik alle parkeeromgevingen opsommen van veel naar weinig gebruikt zodat ik weet waar mogelijk behoefte is aan extra parkeergelegenheid
+M3. Als een medewerker wil ik de klant ophalen die het meest heeft geparkeerd zodat we daarmee rekening kunnen houden met kortingacties
+M4. Als een medewerker wil ik de bedrijven zien met het aantal medewerkers van veel naar weinig  zodat we daarmee rekening kunnen houden met abonnementsaanbiedingen
+M5. Als een medewerker wil ik een beknopt overzicht van klant, kenteken en het aantal sessies per klant zodat we snel zien hoe vaak klanten PPP gebruiken
 
 Queries db_admin:
----> A1. 
+---> A1. Als admin wil ik de processlist zien van alle users zodat ... - ??
 
 Queries bedrijf:
-B1. Ik wil de factuur ophalen voor factuurnummer 13 inclusief de parkeerkosten
----> B3. Ik wil een overzicht met alle NAW-gegevens van alle medewerkers die PPP gebruiken
+B1. Als bedrijfsmedewerker wil ik de factuur van een medewerker ophalen inclusief de parkeerkosten zodat we specifieke kosten in kaart kunnen brengen
+B3. Als bedrijfsmedewerker wil ik een overzicht met alle NAW-gegevens van alle medewerkers die PPP gebruiken zodat we overzicht houden over de administratie
 
 Queries particulier:
----> P1. Ik wil al mijn parkeersessies zien
-P2. Ik wil mijn adres wijzigen
----> P3. Ik wil mijn account verwijderen
+---> P1. Als particulier wil ik al mijn parkeersessies zien zodat ik weet hoeveel facturen ik nog zal ontvangen
+P2. Als particulier wil ik mijn adres wijzigen zodat de gegevens kloppen na mijn verhuizing
+---> P3. Als particulier wil ik mijn account verwijderen zodat ik controle heb over mijn persoonsgegevens 
+
+Stored Procedures:
+SP1. getAllParkeersessies() Simpele test om alle parkeersessies op te halen 
+SP2. parkeerKostenFactuurNr(FactuurNr) Parkeerkosten (inclusief gratis uren) van factuurnummer X - nog niet opgelost met dubbele parkeersessies op 1 factuur 
+SP3. kostenParkeerPlaatsId1(ReserveringsNr) bereken parkeerkosten exclusief de gratis parkerentijden - nog niet opgelost als iemand van 23:00 tot 06:00 uur parkeert
+
+Events:
+---> E1.
+
+Triggers
+---> T1.
 
 Versie 1.2
 + Stored Procedures toegevoegd
@@ -31,7 +43,12 @@ Versie 1.1
 */
 
 /**
-* M1. Alle facturen met naam en adres 
+* M1. Exacte parkeerkosten (totale parkeertijd - gratis parkeertijd) ReserveringsNr 3.
+*/
+CALL parkeerKostenFactuurNr(3);
+
+/**
+* M2. Alle facturen met naam en adres 
 */
 SELECT 
 	F.FactuurNr,
@@ -44,7 +61,7 @@ FROM Factuur F
 LEFT JOIN FactuurRegel FR ON F.FactuurNr = FR.FactuurNr;
 
 /**
-* M2. Alle parkeerplaatsen van veel naar weinig gebruikt 
+* M3. Alle parkeerplaatsen van veel naar weinig gebruikt 
 */
 SELECT 
     ParkeerPlaatsId AS Id,
@@ -56,7 +73,7 @@ GROUP BY ParkeerPlaats
 ORDER BY AantalKeer DESC;
 
 /**
-* M3. Klant die het meest heeft geparkeerd 
+* M4. Klant die het meest heeft geparkeerd 
 */
 SELECT 
     V.Kenteken,
@@ -70,9 +87,21 @@ ORDER BY AantalKeer DESC
 LIMIT 1;
 
 /**
-* M4. Ik wil het bedrijf zien met de meeste medewerkers die PPP gebruiken 
+* M5. Ik wil de bedrijven zien met het aantal medewerkers van veel naar weinig 
 */
-    
+SELECT
+    BedrijfsNaam,
+    COUNT(KlantId) AS AantalMedewerkers
+FROM Zakelijk Z
+LEFT JOIN Klant K ON Z.KvkNummer = K.KvkNummer
+GROUP BY BedrijfsNaam
+ORDER BY AantalMedewerkers DESC;
+
+/**
+* A1. Laat de processlist zien van alle users
+*/
+SHOW PROCESSLIST;
+
 /**
 * B1. Factuurnummer 13 inclusief parkeerkosten - nog niet opgelost hoe je meerdere parkeerregels kunt toevoegen  
 */
@@ -96,8 +125,19 @@ LEFT JOIN FactuurRegel FR ON F.FactuurNr = FR.FactuurNr
 WHERE F.FactuurNr = 13;
 
 /**
-* B3. Ik wil een overzicht met alle NAW-gegevens van alle medewerkers die PPP gebruiken 
+* B3. Overzicht met alle NAW-gegevens van alle medewerkers van bedrijf Henneken die PPP gebruiken 
 */
+SELECT
+    CONCAT_WS(' ', Voornaam, Tussenvoegsel, Achternaam) AS Medewerker,
+    CONCAT_WS(' ', Straat, HuisNr) AS Adres,
+    Postcode,
+    Stad,
+    Mobiel,
+    TelefoonVast
+FROM Klant K
+LEFT JOIN Zakelijk Z ON K.KvkNummer = Z.KvkNummer
+LEFT JOIN Adres A ON K.KlantId = A.KlantId
+WHERE K.KvkNummer = 12345678;
 
 /**
 * P1. Ik wil al mijn parkeersessies zien 
@@ -115,19 +155,20 @@ SET
 WHERE klantId = 1;
 
 /**
-* P3. Ik wil mijn account verwijderen 
+* P3. Ik wil mijn account verwijderen (KlantId 20)
 */
+
 
 /*******************
 * STORED PROCEDURES
 **/
 
 /**
-* 1 Stored Procedure: simpele test om alle parkeersessies op te halen 
+* SP1. getAllParkeersessies() Simpele test om alle parkeersessies op te halen 
 */
 DELIMITER $$
 
-CREATE PROCEDURE GetAllParkeersessies()
+CREATE PROCEDURE getAllParkeersessies()
 BEGIN
     SELECT *
     FROM ParkeerSessie;
@@ -136,11 +177,11 @@ END $$
 DELIMITER ;
 
 /*
-CALL GetAllParkeersessies();
+CALL getAllParkeersessies();
 */
 
 /**
-* 2 Stored Procedure: parkeerkosten (inclusief gratis uren) van factuurnummer X - nog niet opgelost met dubbele parkeersessies op 1 factuur 
+* SP2. parkeerKostenFactuurNr(FactuurNr) Parkeerkosten (inclusief gratis uren) van factuurnummer X - nog niet opgelost met dubbele parkeersessies op 1 factuur 
 */
 DELIMITER $$
 
@@ -175,7 +216,7 @@ CALL parkeerKostenFactuurNr(7);
 */
 
 /**
-* 3. Stored Procedure: bereken parkeerkosten exclusief de gratis parkerentijden - nog niet opgelost als iemand van 23:00 tot 06:00 uur parkeert (SP zet einddatum dan terug waardoor deze eerder begint dan de begindatum. Nog oplossen)
+* SP3. kostenParkeerPlaatsId1(ReserveringsNr) bereken parkeerkosten exclusief de gratis parkerentijden - nog niet opgelost als iemand van 23:00 tot 06:00 uur parkeert (SP zet einddatum dan terug waardoor deze eerder begint dan de begindatum. Nog oplossen)
 */
 DELIMITER $$
 CREATE PROCEDURE kostenParkeerPlaatsId1 ( 
@@ -276,7 +317,9 @@ END $$
 DELIMITER ;
 
 /*
+CALL kostenParkeerPlaatsId1(1);
+CALL kostenParkeerPlaatsId1(2);
+CALL kostenParkeerPlaatsId1(3);
 CALL kostenParkeerPlaatsId1(14);
+CALL kostenParkeerPlaatsId1(22);
 */
-
-
