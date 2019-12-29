@@ -4,18 +4,24 @@ Name: PinPointParking
 Content: Data Control Language (DCL) for users and roles
 
 Users and roles: 
-- db_admin (ALL PRIVILIGES)
-- medewerker (SELECT, DELETE)
-- bedrijf (SELECT, INSERT, UPDATE, DELETE)
-- particulier (SELECT, INSERT, UPDATE, DELETE)
+1 db_admin (ALL PRIVILIGES)
+  Geen restrictions
+2 Medewerker (SELECT, DELETE)
+  Userrestriction tables
+3 Bedrijf (SELECT, INSERT, UPDATE, DELETE)
+  Views voor userrestriction
+4 Particulier (SELECT, INSERT, UPDATE, DELETE)
+  Algemene user voor nieuwe entrees en per bestaande klant met Views voor userrestriction
 ********************************************************
 */
+
+/* Aanmaken van usernames met passwords zou normaal niet in een file staan, lijkt me maar dit is nu voor het tonen in de proftaak. Daarnaast gekozen voor hele makkelijke wachtwoorden voor het testen in CMD */
 
 /** 
 * 1. Create user db_admin and priviliges 
 */
     CREATE USER IF NOT EXISTS db_admin@localhost
-    IDENTIFIED BY 'HG-738_2fh!ee';
+    IDENTIFIED BY '11-11#11';
 
     /* Check settings priviliges */
     /* SHOW GRANTS FOR db_admin@localhost; */
@@ -27,11 +33,20 @@ Users and roles:
     /* Check new priviliges */
     /* SHOW GRANTS FOR db_admin@localhost; */
 
+
+    CREATE ROLE
+        ppp_dev@localhost,
+        ppp_mw@localhost;
+
+
+
+
+
 /**
 * 2. Create user medewerker and priviliges 
 */
     CREATE USER IF NOT EXISTS medewerker@localhost
-    IDENTIFIED BY 'HFee_342-2fh#f34e';
+    IDENTIFIED BY '1-11#1';
 
     /* Check settings priviliges */
     /* SHOW GRANTS FOR medewerker@localhost; */
@@ -58,7 +73,7 @@ Users and roles:
 
     /* Medewerker kan berekeningen met de stored procedure uitvoeren */
     GRANT EXECUTE 
-    ON PROCEDURE kostenParkeerPlaatsId1 
+    ON PROCEDURE pinpointparking.kostenParkeerPlaatsId1 
     TO medewerker@localhost;
     
 /* Check new priviliges */
