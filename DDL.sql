@@ -1,7 +1,7 @@
 /*
 ****************************************************
 Name: PinPointParking
-Content: Data Definition Language (DDL), dummy data, 
+Content: Data Definition Language (DDL), sample data, 
 stored procedures
 
 Version 1.2
@@ -13,7 +13,7 @@ Version 1.1
 */
 
 /**
-* DDL AND DUMMY DATA
+* DDL AND sample DATA
 **/
 
 /* Create database pinpointparking */
@@ -27,11 +27,10 @@ CREATE TABLE Zakelijk (
     KvkNummer INT(8) PRIMARY KEY,
     BedrijfsNaam VARCHAR(60),
     BtwNummer CHAR(14) UNIQUE
-);
+) ENGINE=InnoDB DEFAULT CHARSET=UTF8;
 
-/* Insert dummy data table Zakelijk */
-INSERT INTO Zakelijk
-VALUES 
+/* Insert sample data table Zakelijk */
+INSERT INTO Zakelijk VALUES 
     (12345678, 'Henneken', 'NL001234567B01'),
     (87654321, 'FC Kip', 'NL003456789B02'),
     (56435654, 'Mora', 'NL767654543B44'),
@@ -47,7 +46,7 @@ VALUES
 DROP TABLE IF EXISTS Klant;
 CREATE TABLE Klant (
     KlantId INT(10) PRIMARY KEY AUTO_INCREMENT,
-    Registratiedatum DATETIME,
+    Registratiedatum DATETIME, /* Dit moet een TIMESTAMP zijn maar voor correcte sample data nu DATETIME */
     Mailadres VARCHAR(60) NOT NULL UNIQUE,
     Wachtwoord VARCHAR(128) NOT NULL,
     Voornaam VARCHAR(20) NOT NULL,
@@ -63,12 +62,11 @@ CREATE TABLE Klant (
     CONSTRAINT zakelijkeKlantFK
     FOREIGN KEY (KvkNummer)
     REFERENCES Zakelijk (KvkNummer)
-    ON DELETE RESTRICT
-);
+    ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=UTF8;
 
-/* Insert dummy data table Klant */
-INSERT INTO Klant
-VALUES
+/* Insert sample data table Klant */
+INSERT INTO Klant VALUES
     (DEFAULT, '2019-10-20', 'h.vogel@henneken.org', 'WW=1234', 'Henk', NULL, 'Vogel', '0612345678', TRUE, 12345678, TRUE, '2019-10-25', 'NL20INGB0001234567'),
     (DEFAULT, '2019-10-20', 't.vandepaddestoel@henneken.org', 'WW=5678', 'Truus', 'van de', 'Paddestoel', '0698765432', TRUE, 12345678, TRUE, '2019-10-25', 'NL20INGB0001234567'),
     (DEFAULT, '2019-10-20', 'h.vanhezelswerd@henneken.org', 'WW=9012', 'Halina', 'van', 'Hezelswerd', '0667589876', TRUE, 12345678, TRUE, '2019-10-25', 'NL20INGB0001234567'),
@@ -105,19 +103,18 @@ CREATE TABLE Adres (
     CONSTRAINT klantAdresFK
     FOREIGN KEY (KlantId)
     REFERENCES Klant (KlantId)
-    ON DELETE RESTRICT
-);
+    ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=UTF8;
 
-/* Insert dummy data table Adres */
-INSERT INTO Adres
-VALUES
+/* Insert sample data table Adres */
+INSERT INTO Adres VALUES
     (DEFAULT, 'Oosterstraat', '29', '5288KL', '''s-Hertogenbosch', DEFAULT, '0735212345', 1),
     (DEFAULT, 'Kerkstraat', '99A', '4842DN', '''s-Hertogenbosch', DEFAULT, NULL, 2),
     (DEFAULT, 'Middellaan', '89', '5270MS', 'Vlijmen', DEFAULT, NULL, 3),
     (DEFAULT, 'Lange van de Lindenlaan', '67C', '5201HJ', 'Berlicum', DEFAULT, '0736789789', 4),
     (DEFAULT, 'Laan van Columbus', '1', '9711PC', 'Groningen', DEFAULT, '0501234567', 5),
     (DEFAULT, 'Alpensteeg', '3', '2456MK', 'Hoek van Holland', DEFAULT, NULL, 6),
-    (DEFAULT, 'Dr. Frankenplein', '110', '4321', 'Antwerpen', 'België', '0032304567654', 7),
+    (DEFAULT, 'Dr. Frankenplein', '110', '4321', 'Antwerpen', 'België', '0032304567654', 7), /* Belgische klant*/
     (DEFAULT, 'Willem de Zwijgerlaan', '13', '2323MN', 'Amsterdam', DEFAULT, NULL, 8),
     (DEFAULT, 'Rijkerstraat', '98', '2320ML', 'Amsterdam', DEFAULT, NULL, 9),
     (DEFAULT, 'Witte de Withlaan', '4', '1234WK', 'Maastricht', DEFAULT, '0345465767', 10),
@@ -128,8 +125,8 @@ VALUES
     (DEFAULT, 'Van Groesbeekseweg', '55', '2376BB', 'Schiedam', DEFAULT, NULL, 15),
     (DEFAULT, 'Schierlaan', '11', '2300KM', 'Vlaardingen', DEFAULT, '0107656789', 16),
     (DEFAULT, 'Hengelose Baan', '343', '8887MM', 'Oldenzaal', DEFAULT, NULL, 17),
-    (DEFAULT, 'Kleiner Weg', '4', '48455', 'Bad Bentheim', 'Duitsland', '004933045432145', 18),
-    (DEFAULT, 'Urbanusplein', '1', '3222', 'Antwerpen', 'België', '0032304767674', 19),
+    (DEFAULT, 'Kleiner Weg', '4', '48455', 'Bad Bentheim', 'Duitsland', '004933045432145', 18), /* Duitse klant*/
+    (DEFAULT, 'Urbanusplein', '1', '3222', 'Antwerpen', 'België', '0032304767674', 19), /* Belgische klant*/
     (DEFAULT, 'Strandpad', '3A', '1098FG', 'Middelburg', DEFAULT, NULL, 20);
 
 /* Create table Voertuig */
@@ -142,12 +139,11 @@ CREATE TABLE Voertuig (
     CONSTRAINT klantVoertuigFK
     FOREIGN KEY (KlantId)
     REFERENCES Klant (KlantId)
-    ON DELETE RESTRICT
-);
+    ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=UTF8;
 
-/* Insert dummy data table Voertuig */
-INSERT INTO Voertuig
-VALUES 
+/* Insert sample data table Voertuig */
+INSERT INTO Voertuig VALUES 
     (DEFAULT, 'XD-43-LK', 1),
     (DEFAULT, 'XD-43-LK', 2), /* deelt auto van de zaak met 1 */
     (DEFAULT, '7-GHT-34', 3),
@@ -183,11 +179,10 @@ CREATE TABLE ParkeerPlaats (
     MaxDuur SMALLINT(1),
     BeginBetaaldParkerenDag TIME,
     EindeBetaaldParkerenDag TIME
-);
+) ENGINE=InnoDB DEFAULT CHARSET=UTF8;
 
-/* Insert dummy data table ParkeerPlaats */
-INSERT INTO ParkeerPlaats
-VALUES
+/* Insert sample data table ParkeerPlaats */
+INSERT INTO ParkeerPlaats VALUES
     (DEFAULT, 'Leeghmanstraat', '3', '5200LM', '''s-Hertogenbosch', TRUE, FALSE, '2.99', 24, '09:00:00', '17:00:00'),
     (DEFAULT, 'Rademarkt', '7', '9711KZ', 'Groningen', FALSE, TRUE, '2.49', 24, '08:00:00', '20:00:00'),
     (DEFAULT, 'Kirkmanlaan', '303', '2300RL', 'Rotterdam', FALSE, TRUE, '3.99', 24, '00:00:00', '23:59:59'),
@@ -209,25 +204,24 @@ CREATE TABLE ParkeerSessie (
     EindTijd DATETIME NOT NULL,
     ParkeerPlaats INT(10) NOT NULL,
 
-    CONSTRAINT kentekenParkeerSessieFK1
+    CONSTRAINT klantIdParkeerSessieFK1
     FOREIGN KEY (KlantId)
     REFERENCES Klant (KlantId)
     ON DELETE RESTRICT,
 
-    CONSTRAINT kentekenParkeerSessieFK2
+    CONSTRAINT voertuigIdParkeerSessieFK2
     FOREIGN KEY (VoertuigId)
     REFERENCES Voertuig (VoertuigId)
     ON DELETE RESTRICT,
 
-    CONSTRAINT parkeerPlaatsSessieFK3
+    CONSTRAINT parkeerPlaatsParkeerSessieFK3
     FOREIGN KEY (ParkeerPlaats)
     REFERENCES ParkeerPlaats (ParkeerPlaatsId)
     ON DELETE RESTRICT
-);
+) ENGINE=InnoDB DEFAULT CHARSET=UTF8;
 
-/* Insert dummy data table ParkeerSessie */
-INSERT INTO ParkeerSessie
-VALUES 
+/* Insert sample data table ParkeerSessie */
+INSERT INTO ParkeerSessie VALUES 
     (DEFAULT, 1, 1, '2019-11-01 15:02:45', '2019-11-01 16:31:20', 1),
     (DEFAULT, 1, 1, '2019-11-08 10:52:41', '2019-11-08 22:01:09', 1),
     (DEFAULT, 2, 2, '2019-11-09 12:12:23', '2019-11-09 14:41:23', 1),
@@ -272,11 +266,10 @@ CREATE TABLE Factuur (
     FOREIGN KEY (KlantId)
     REFERENCES Klant (KlantId)
     ON DELETE RESTRICT
-);
+) ENGINE=InnoDB DEFAULT CHARSET=UTF8;
 
-/* Insert dummy data table Factuur */
-INSERT INTO Factuur
-VALUES 
+/* Insert sample data table Factuur */
+INSERT INTO Factuur VALUES 
     (DEFAULT, '2019-11-30', 'Henk', NULL, 'Vogel', '0612345678', 'Oosterstraat', '29', '5288KL', '''s-Hertogenbosch', DEFAULT, '0735212345', 1),
     (DEFAULT, '2019-11-30', 'Truus', 'van de', 'Paddestoel', '0698765432', 'Kerkstraat', '99A', '4842DN', '''s-Hertogenbosch', DEFAULT, NULL, 2),
     (DEFAULT, '2019-11-30', 'Halina', 'van', 'Hezelswerd', '0667589876', 'Middellaan', '89', '5270MS', 'Vlijmen', DEFAULT, NULL, 3), 
@@ -321,11 +314,10 @@ CREATE TABLE FactuurRegel (
     FOREIGN KEY (FactuurNr)
     REFERENCES Factuur (FactuurNr)
     ON DELETE RESTRICT
-);
+) ENGINE=InnoDB DEFAULT CHARSET=UTF8;
 
-/* Insert dummy data table FactuurRegel */
-INSERT INTO FactuurRegel
-VALUES 
+/* Insert sample data table FactuurRegel */
+INSERT INTO FactuurRegel VALUES 
     (1, 'XD-43-LK', '2019-11-01 15:02:45', '2019-11-01 16:31:20', 'Leeghmanstraat','3', '5200LM', '''s-Hertogenbosch', TRUE, FALSE, '2.99', 24, '09:00:00', '17:00:00'),
     (1, 'XD-43-LK', '2019-11-08 10:52:41', '2019-11-08 22:01:09', 'Leeghmanstraat','3', '5200LM', '''s-Hertogenbosch', TRUE, FALSE, '2.99', 24, '09:00:00', '17:00:00'),
     (2, 'XD-43-LK', '2019-11-09 12:12:23', '2019-11-09 14:41:23', 'Leeghmanstraat','3', '5200LM', '''s-Hertogenbosch', TRUE, FALSE, '2.99', 24, '09:00:00', '17:00:00'),
