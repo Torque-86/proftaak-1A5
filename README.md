@@ -1,9 +1,9 @@
 # proftaak-1A5
 
 
-# Documentatie Relationele database
+## Documentatie Relationele database
 
-## Tabellen: Klant, Zakelijk, Adres, Voertuig, ParkeerSessie, ParkeerPlaats, Factuur en FactuurRegels
+### Tabellen: Klant, Zakelijk, Adres, Voertuig, ParkeerSessie, ParkeerPlaats, Factuur en FactuurRegels
 
 #### Klant
 _KlantId_ – deze interger word gekoppeld aan een persoon en alle data kan via deze Id worden opgeroepen.
